@@ -3,10 +3,14 @@
  */
 package uk.ac.kcl.inf.mazegame.generator
 
+import java.util.HashMap
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import uk.ac.kcl.inf.mazegame.mazeGame.DoorDefinition
+import uk.ac.kcl.inf.mazegame.mazeGame.MazeGame
+import uk.ac.kcl.inf.mazegame.mazeGame.RoomDefinition
 
 /**
  * Generates code from your model files on save.
@@ -16,10 +20,51 @@ import org.eclipse.xtext.generator.IGeneratorContext
 class MazeGameGenerator extends AbstractGenerator {
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-//		fsa.generateFile('greetings.txt', 'People to greet: ' + 
-//			resource.allContents
-//				.filter(Greeting)
-//				.map[name]
-//				.join(', '))
+		roomIndex.clear
+		nextRoomIndex = 0
+		fsa.generateFile('Main.java', resource.allContents.filter(MazeGame).head.generateMainClass());
+	}
+
+	private def generateMainClass(MazeGame game) '''
+		import static uk.ac.kcl.inf.mazegame.fluentInterface.MakeMaze2.createMaze;
+		
+		public class Main {
+		
+			public static void main(String[] args) {
+				createMaze()
+					«game.generateRoomDefinitions»
+					
+					.validate()
+					
+					.run();
+			}
+		}
+		
+	'''
+
+	private def generateRoomDefinitions(MazeGame game) {
+		game.rooms.map[r|r.generateRoomDefinition].join("\n\n");
+	}
+
+	private def generateRoomDefinition(RoomDefinition rd) '''
+		.withRoom(«rd.roomID»)
+			.description("«rd.description»")
+			«rd.doors.map[d | d.generateDoorDefinition].join("\n")»
+		.end()
+	'''
+
+	private def generateDoorDefinition(DoorDefinition dd) '''
+		.door«dd.direction.literal.toFirstUpper»To(«dd.adjacentRoom.roomID»)
+	'''
+
+	private var roomIndex = new HashMap<RoomDefinition, Integer>()
+	private var nextRoomIndex = 0
+
+	private def getRoomID(RoomDefinition rd) {
+		if (!roomIndex.containsKey(rd)) {
+			roomIndex.put(rd, nextRoomIndex++)
+		}
+
+		roomIndex.get(rd)
 	}
 }
