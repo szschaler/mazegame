@@ -22,13 +22,16 @@ class MazeGameGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		roomIndex.clear
 		nextRoomIndex = 0
-		fsa.generateFile('Main.java', resource.allContents.filter(MazeGame).head.generateMainClass());
+
+		val className = resource.URI.trimFileExtension.lastSegment.toFirstUpper
+		fsa.generateFile(className + '.java',
+			resource.allContents.filter(MazeGame).head.generateMainClass(className));
 	}
 
-	private def generateMainClass(MazeGame game) '''
+	private def generateMainClass(MazeGame game, String className) '''
 		import static uk.ac.kcl.inf.mazegame.fluentInterface.MakeMaze2.createMaze;
 		
-		public class Main {
+		public class «className» {
 		
 			public static void main(String[] args) {
 				createMaze()
