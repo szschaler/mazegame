@@ -3,23 +3,67 @@
  */
 package uk.ac.kcl.inf.mazegame.validation
 
+import java.util.HashMap
+import java.util.LinkedList
+import java.util.List
+import java.util.Map
+import org.eclipse.xtext.validation.Check
+import uk.ac.kcl.inf.mazegame.mazeGame.MazeGame
+import uk.ac.kcl.inf.mazegame.mazeGame.MazeGamePackage
+import uk.ac.kcl.inf.mazegame.mazeGame.RoomDefinition
 
 /**
  * This class contains custom validation rules. 
- *
+ * 
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class MazeGameValidator extends AbstractMazeGameValidator {
+
+	public static val UNREACHABLE_ROOM = "uk.ac.kcl.inf.mazegame.ROOM_UNREACHABLE"
+
+	@Check
+	def checkAllRoomsAreReachable(MazeGame mg) {
+		val roomGraph = mg.buildRoomGraph
+		var unVisited = new LinkedList<RoomDefinition>(mg.rooms)
+		traverseRooms(mg.rooms.head, roomGraph, unVisited)
+
+		unVisited.forEach[rd | 
+			warning("Room cannot be reached.", rd, MazeGamePackage.Literals.ROOM_DEFINITION__DESCRIPTION, UNREACHABLE_ROOM)
+		]
+	}
 	
-//	public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					MazeGamePackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
-	
+	private def buildRoomGraph(MazeGame mg) {
+		val roomGraph = new HashMap<RoomDefinition, RoomDefinition[]>()
+		
+		mg.rooms.forEach[rd | 
+			roomGraph.put(rd, #[null, null, null, null])
+		]
+		mg.rooms.forEach[rd | 
+			rd.doors.forEach[d | 
+				roomGraph.get(rd).set(d.direction.ordinal, d.adjacentRoom)
+				roomGraph.get(d.adjacentRoom).set((d.direction.ordinal + 2) % 4, rd)
+			]
+		]
+		
+		roomGraph
+	}
+
+	// FIXME: This is wrong: need to build the effect of applying these statements, then traverse that
+	private def void traverseRooms(RoomDefinition current, Map<RoomDefinition, RoomDefinition[]> roomGraph, List<RoomDefinition> toVisit) {
+		if (!toVisit.contains(current)) {
+			// Already went here...
+			return
+		}
+
+		toVisit.remove(current)
+		if (toVisit.isEmpty()) {
+			return
+		}
+
+		roomGraph.get(current).forEach[rd | 
+			if (rd !== null) {
+				traverseRooms(rd, roomGraph, toVisit)
+			}
+		]
+	}
 }
