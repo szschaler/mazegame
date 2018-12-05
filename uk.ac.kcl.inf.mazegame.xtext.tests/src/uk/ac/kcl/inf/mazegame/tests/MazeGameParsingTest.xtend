@@ -39,9 +39,9 @@ class MazeGameParsingTest {
 					east: _1
 				}
 				
-					room "You should be able to get here, though!" {
-						east: _1
-					}
+				room "You should be able to get here, though!" {
+					east: _1
+				}
 				}
 		'''.parse
 		
