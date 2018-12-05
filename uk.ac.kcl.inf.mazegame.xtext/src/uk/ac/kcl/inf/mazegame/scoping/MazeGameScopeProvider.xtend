@@ -3,6 +3,14 @@
  */
 package uk.ac.kcl.inf.mazegame.scoping
 
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.xtext.scoping.IScope
+import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
+import uk.ac.kcl.inf.mazegame.mazeGame.DoorDefinition
+import uk.ac.kcl.inf.mazegame.mazeGame.MazeGame
+import uk.ac.kcl.inf.mazegame.mazeGame.RoomDefinition
+
+import static org.eclipse.xtext.scoping.Scopes.*
 
 /**
  * This class contains custom scoping description.
@@ -10,6 +18,12 @@ package uk.ac.kcl.inf.mazegame.scoping
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#scoping
  * on how and when to use it.
  */
-class MazeGameScopeProvider extends AbstractMazeGameScopeProvider {
+class MazeGameScopeProvider extends AbstractDeclarativeScopeProvider {
 
+	def IScope scope_DoorDefinition_adjacentRoom(DoorDefinition context, EReference reference) {
+		val game = context.eContainer.eContainer as MazeGame
+		val index = game.rooms.indexOf(context.eContainer as RoomDefinition)
+		
+		scopeFor(game.rooms.take(index)) 
+	}
 }

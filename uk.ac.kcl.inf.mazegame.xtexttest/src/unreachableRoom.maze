@@ -1,5 +1,7 @@
 maze { 
-	room _0 "You're in a dark and dank room." { } 
+	room _0 "You're in a dark and dank room." {
+//		south: _2
+	}
 	
 	room _1 "You're in a brightly lit room." { 
 		south : _0
