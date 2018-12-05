@@ -1,0 +1,9 @@
+maze { 
+	room _0 "You're in the dark and not very happy. Let's get out of here!!!" {
+		
+	}
+	
+	room "This is much better now!" {
+		south: _0
+	}
+}
