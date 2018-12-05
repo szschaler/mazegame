@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: uk.ac.kcl.inf.mazegame.xtext
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: uk.ac.kcl.inf.mazegame.xtext; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib,
+ org.antlr.runtime,
+ org.eclipse.xtext.util,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: uk.ac.kcl.inf.mazegame.parser.antlr.internal,
+ uk.ac.kcl.inf.mazegame.parser.antlr,
+ uk.ac.kcl.inf.mazegame.mazeGame,
+ uk.ac.kcl.inf.mazegame,
+ uk.ac.kcl.inf.mazegame.mazeGame.util,
+ uk.ac.kcl.inf.mazegame.generator,
+ uk.ac.kcl.inf.mazegame.scoping,
+ uk.ac.kcl.inf.mazegame.mazeGame.impl,
+ uk.ac.kcl.inf.mazegame.validation,
+ uk.ac.kcl.inf.mazegame.serializer,
+ uk.ac.kcl.inf.mazegame.services
+Import-Package: org.apache.log4j

@@ -1,0 +1,23 @@
+grammar uk.ac.kcl.inf.mazegame.MazeGame with org.eclipse.xtext.common.Terminals
+
+generate mazeGame "http://www.ac.uk/kcl/inf/mazegame/MazeGame"
+
+MazeGame:
+	"maze" "{"
+		rooms += RoomDefinition+
+	"}"
+;
+
+RoomDefinition:
+	"room" (name=ID)? description=STRING "{"
+		doors += DoorDefinition*
+	"}"
+;
+
+DoorDefinition:
+	direction=Direction ":" adjacentRoom=[RoomDefinition]
+;
+
+enum Direction:
+	NORTH="north" | EAST="east" | SOUTH="south" | WEST="west"
+;
