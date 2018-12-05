@@ -25,5 +25,6 @@ Export-Package: uk.ac.kcl.inf.mazegame.parser.antlr.internal,
  uk.ac.kcl.inf.mazegame.mazeGame.impl,
  uk.ac.kcl.inf.mazegame.validation,
  uk.ac.kcl.inf.mazegame.serializer,
- uk.ac.kcl.inf.mazegame.services
+ uk.ac.kcl.inf.mazegame.services,
+ uk.ac.kcl.inf.mazegame.formatting2
 Import-Package: org.apache.log4j
