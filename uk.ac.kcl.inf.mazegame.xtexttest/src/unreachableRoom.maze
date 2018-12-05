@@ -1,0 +1,15 @@
+maze { 
+	room _0 "You're in a dark and dank room." { } 
+	
+	room _1 "You're in a brightly lit room." { 
+		south : _0
+	} 
+	
+	room _2 "Can you reach this room (it has the treasure!)?" { 
+		east : _1
+	} 
+	
+	room "You should be able to get here, though!" { 
+		east : _1
+	}
+}
