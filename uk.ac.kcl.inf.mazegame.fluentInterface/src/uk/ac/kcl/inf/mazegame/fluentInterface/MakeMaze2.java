@@ -1,6 +1,8 @@
 package uk.ac.kcl.inf.mazegame.fluentInterface;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import uk.ac.kcl.inf.mazegame.model.Direction;
@@ -89,6 +91,54 @@ public class MakeMaze2 {
 		}
 	}
 
+	/**
+	 * Validate the maze definition
+	 */
+	public MakeMaze2 validate() {
+		validateAllRoomsCanBeReached();
+		
+		return this;
+	}
+	
+	/**
+	 * Do a full traversal from the start room and see if any rooms cannot be reached.
+	 */
+	private void validateAllRoomsCanBeReached() {
+		List<Room> unVisited = new LinkedList<>(roomIndex.values());
+		traverseRooms(theGame.getStartRoom(), unVisited);
+		
+		if (!unVisited.isEmpty()) {
+			StringBuilder sbRoomsList = new StringBuilder();
+			for (Room r : unVisited) {
+				sbRoomsList.append("\"").append(r.getDescription()).append("\"");
+			}
+			throw new IllegalStateException("The following rooms could not be reached: " + sbRoomsList);
+		}
+	}
+	
+	private void traverseRooms(Room current, List<Room> toVisit) {
+		if (!toVisit.contains(current)) {
+			// Already went here...
+			return;
+		}
+		
+		toVisit.remove(current);
+		if (toVisit.isEmpty()) {
+			return;
+		}
+		
+		for (Direction side: Direction.values()) {
+			Wall w = current.getSide(side);
+			if (w.isDoor()) {
+				DoorWall dw = (DoorWall) w;
+				traverseRooms(dw.getAdjacentRoom(current), toVisit);
+				if (toVisit.isEmpty()) {
+					return;
+				}
+			}
+		}
+	}
+	
 	public void run() {
 		new MazeViewer(theGame).setVisible(true);
 	}
