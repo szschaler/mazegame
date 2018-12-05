@@ -22,7 +22,7 @@ public class Main {
 		DoorWall dw = new DoorWall(startRoom, secondRoom);
 		dw.open();
 		startRoom.setSide(Direction.NORTH, dw);
-		secondRoom.setSide(Direction.SOUTH, dw);
+		secondRoom.setSide(Direction.NORTH, dw);
 		mg.addRoom(startRoom);
 		mg.addRoom(secondRoom);
 		
