@@ -4,30 +4,44 @@
 package uk.ac.kcl.inf.mazegame.formatting2
 
 import com.google.inject.Inject
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.formatting2.AbstractFormatter2
 import org.eclipse.xtext.formatting2.IFormattableDocument
 import uk.ac.kcl.inf.mazegame.mazeGame.DoorDefinition
 import uk.ac.kcl.inf.mazegame.mazeGame.MazeGame
 import uk.ac.kcl.inf.mazegame.mazeGame.RoomDefinition
 import uk.ac.kcl.inf.mazegame.services.MazeGameGrammarAccess
+import uk.ac.kcl.inf.mazegame.mazeGame.MazeGamePackage
 
 class MazeGameFormatter extends AbstractFormatter2 {
 	
 	@Inject extension MazeGameGrammarAccess
 
 	def dispatch void format(MazeGame mazeGame, extension IFormattableDocument document) {
-		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
-		for (RoomDefinition roomDefinition : mazeGame.getRooms()) {
-			roomDefinition.format;
-		}
+		mazeGame.regionFor.keyword("maze").append[oneSpace]
+		mazeGame.blockIndent(document)
+ 
+		mazeGame.rooms.forEach[r | r.format]
 	}
 
 	def dispatch void format(RoomDefinition roomDefinition, extension IFormattableDocument document) {
-		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
-		for (DoorDefinition doorDefinition : roomDefinition.getDoors()) {
-			doorDefinition.format;
-		}
+		roomDefinition.regionFor.keyword("room").append[oneSpace]
+		roomDefinition.regionFor.feature(MazeGamePackage.Literals.ROOM_DEFINITION__NAME).surround[oneSpace]
+		roomDefinition.regionFor.feature(MazeGamePackage.Literals.ROOM_DEFINITION__DESCRIPTION).surround[oneSpace]
+		roomDefinition.blockIndent(document)
+		
+		roomDefinition.doors.forEach[d | d.format]
 	}
 	
-	// TODO: implement for 
+	def dispatch void format(DoorDefinition doorDefinition, extension IFormattableDocument document) {
+		doorDefinition.regionFor.keyword(":").append[oneSpace].prepend[noSpace]
+	}
+	
+	private def blockIndent(EObject object, extension IFormattableDocument document) {
+		interior(
+			object.regionFor.keyword("{").prepend[oneSpace].append[newLine],
+			object.regionFor.keyword("}").prepend[newLine].append[newLines=2],
+			[indent]
+		)		
+	}
 }

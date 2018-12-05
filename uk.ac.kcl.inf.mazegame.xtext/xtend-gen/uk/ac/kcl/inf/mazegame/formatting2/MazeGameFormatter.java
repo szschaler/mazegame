@@ -5,14 +5,19 @@ package uk.ac.kcl.inf.mazegame.formatting2;
 
 import com.google.inject.Inject;
 import java.util.Arrays;
-import org.eclipse.emf.common.util.EList;
+import java.util.function.Consumer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.formatting2.AbstractFormatter2;
 import org.eclipse.xtext.formatting2.IFormattableDocument;
+import org.eclipse.xtext.formatting2.IHiddenRegionFormatter;
+import org.eclipse.xtext.formatting2.regionaccess.ISemanticRegion;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.xbase.lib.Extension;
+import org.eclipse.xtext.xbase.lib.Pair;
+import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import uk.ac.kcl.inf.mazegame.mazeGame.DoorDefinition;
 import uk.ac.kcl.inf.mazegame.mazeGame.MazeGame;
+import uk.ac.kcl.inf.mazegame.mazeGame.MazeGamePackage;
 import uk.ac.kcl.inf.mazegame.mazeGame.RoomDefinition;
 import uk.ac.kcl.inf.mazegame.services.MazeGameGrammarAccess;
 
@@ -23,41 +28,93 @@ public class MazeGameFormatter extends AbstractFormatter2 {
   private MazeGameGrammarAccess _mazeGameGrammarAccess;
   
   protected void _format(final MazeGame mazeGame, @Extension final IFormattableDocument document) {
-    EList<RoomDefinition> _rooms = mazeGame.getRooms();
-    for (final RoomDefinition roomDefinition : _rooms) {
-      document.<RoomDefinition>format(roomDefinition);
-    }
+    final Procedure1<IHiddenRegionFormatter> _function = (IHiddenRegionFormatter it) -> {
+      it.oneSpace();
+    };
+    document.append(this.textRegionExtensions.regionFor(mazeGame).keyword("maze"), _function);
+    this.blockIndent(mazeGame, document);
+    final Consumer<RoomDefinition> _function_1 = (RoomDefinition r) -> {
+      document.<RoomDefinition>format(r);
+    };
+    mazeGame.getRooms().forEach(_function_1);
   }
   
   protected void _format(final RoomDefinition roomDefinition, @Extension final IFormattableDocument document) {
-    EList<DoorDefinition> _doors = roomDefinition.getDoors();
-    for (final DoorDefinition doorDefinition : _doors) {
-      document.<DoorDefinition>format(doorDefinition);
-    }
+    final Procedure1<IHiddenRegionFormatter> _function = (IHiddenRegionFormatter it) -> {
+      it.oneSpace();
+    };
+    document.append(this.textRegionExtensions.regionFor(roomDefinition).keyword("room"), _function);
+    final Procedure1<IHiddenRegionFormatter> _function_1 = (IHiddenRegionFormatter it) -> {
+      it.oneSpace();
+    };
+    document.surround(this.textRegionExtensions.regionFor(roomDefinition).feature(MazeGamePackage.Literals.ROOM_DEFINITION__NAME), _function_1);
+    final Procedure1<IHiddenRegionFormatter> _function_2 = (IHiddenRegionFormatter it) -> {
+      it.oneSpace();
+    };
+    document.surround(this.textRegionExtensions.regionFor(roomDefinition).feature(MazeGamePackage.Literals.ROOM_DEFINITION__DESCRIPTION), _function_2);
+    this.blockIndent(roomDefinition, document);
+    final Consumer<DoorDefinition> _function_3 = (DoorDefinition d) -> {
+      document.<DoorDefinition>format(d);
+    };
+    roomDefinition.getDoors().forEach(_function_3);
   }
   
-  public void format(final Object mazeGame, final IFormattableDocument document) {
-    if (mazeGame instanceof XtextResource) {
-      _format((XtextResource)mazeGame, document);
+  protected void _format(final DoorDefinition doorDefinition, @Extension final IFormattableDocument document) {
+    final Procedure1<IHiddenRegionFormatter> _function = (IHiddenRegionFormatter it) -> {
+      it.oneSpace();
+    };
+    final Procedure1<IHiddenRegionFormatter> _function_1 = (IHiddenRegionFormatter it) -> {
+      it.noSpace();
+    };
+    document.prepend(document.append(this.textRegionExtensions.regionFor(doorDefinition).keyword(":"), _function), _function_1);
+  }
+  
+  private Pair<ISemanticRegion, ISemanticRegion> blockIndent(final EObject object, @Extension final IFormattableDocument document) {
+    final Procedure1<IHiddenRegionFormatter> _function = (IHiddenRegionFormatter it) -> {
+      it.oneSpace();
+    };
+    final Procedure1<IHiddenRegionFormatter> _function_1 = (IHiddenRegionFormatter it) -> {
+      it.newLine();
+    };
+    final Procedure1<IHiddenRegionFormatter> _function_2 = (IHiddenRegionFormatter it) -> {
+      it.newLine();
+    };
+    final Procedure1<IHiddenRegionFormatter> _function_3 = (IHiddenRegionFormatter it) -> {
+      it.setNewLines(2);
+    };
+    final Procedure1<IHiddenRegionFormatter> _function_4 = (IHiddenRegionFormatter it) -> {
+      it.indent();
+    };
+    return document.<ISemanticRegion, ISemanticRegion>interior(
+      document.append(document.prepend(this.textRegionExtensions.regionFor(object).keyword("{"), _function), _function_1), 
+      document.append(document.prepend(this.textRegionExtensions.regionFor(object).keyword("}"), _function_2), _function_3), _function_4);
+  }
+  
+  public void format(final Object doorDefinition, final IFormattableDocument document) {
+    if (doorDefinition instanceof XtextResource) {
+      _format((XtextResource)doorDefinition, document);
       return;
-    } else if (mazeGame instanceof MazeGame) {
-      _format((MazeGame)mazeGame, document);
+    } else if (doorDefinition instanceof DoorDefinition) {
+      _format((DoorDefinition)doorDefinition, document);
       return;
-    } else if (mazeGame instanceof RoomDefinition) {
-      _format((RoomDefinition)mazeGame, document);
+    } else if (doorDefinition instanceof MazeGame) {
+      _format((MazeGame)doorDefinition, document);
       return;
-    } else if (mazeGame instanceof EObject) {
-      _format((EObject)mazeGame, document);
+    } else if (doorDefinition instanceof RoomDefinition) {
+      _format((RoomDefinition)doorDefinition, document);
       return;
-    } else if (mazeGame == null) {
+    } else if (doorDefinition instanceof EObject) {
+      _format((EObject)doorDefinition, document);
+      return;
+    } else if (doorDefinition == null) {
       _format((Void)null, document);
       return;
-    } else if (mazeGame != null) {
-      _format(mazeGame, document);
+    } else if (doorDefinition != null) {
+      _format(doorDefinition, document);
       return;
     } else {
       throw new IllegalArgumentException("Unhandled parameter types: " +
-        Arrays.<Object>asList(mazeGame, document).toString());
+        Arrays.<Object>asList(doorDefinition, document).toString());
     }
   }
 }
